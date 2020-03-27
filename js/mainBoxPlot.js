@@ -2,24 +2,31 @@ BoxPlot = function(
   _parentElement,
   _x,
   _y,
-  _xDisplacement,
   _Province,
   _indicator,
-  _provinceData
+  _provinceData,
+  _domain
 ) {
   this.parentElement = _parentElement;
   this.x = _x;
   this.y = _y;
-  this.xDisplacement = _xDisplacement;
   this.Province = _Province;
   this.indicator = _indicator;
   this.provinceData = _provinceData;
+  this.domain = _domain;
 
   this.initVis();
 };
 
+//OUTS - reading assignement:
+//https://uxdesign.cc/design-better-data-tables-4ecc99d23356
+//https://medium.com/nona-web/data-tables-best-practices-f5edbb917823
+//https://medium.com/mission-log/design-better-data-tables-430a30a00d8c
+
 BoxPlot.prototype.initVis = function() {
   let vis = this;
+
+  console.log(vis.domain);
 
   // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
   vis.sumstat = d3
@@ -56,8 +63,9 @@ BoxPlot.prototype.initVis = function() {
       );
 
       vis.interQuantileRange = vis.q3 - vis.q1;
-      vis.min = vis.q1 - 1.5 * vis.interQuantileRange;
-      vis.max = vis.q3 + 1.5 * vis.interQuantileRange;
+      vis.extent = d3.extent(d, function(g) {
+        return g[vis.indicator];
+      });
 
       //OUTS: read this: http://learnjsdata.com/group_data.html
 
@@ -66,19 +74,27 @@ BoxPlot.prototype.initVis = function() {
         median: vis.median,
         q3: vis.q3,
         interQuantileRange: vis.interQuantileRange,
-        min: 3, //OUTS - both min and max have to be set dynamically
-        max: 46
+        min: vis.extent[0],
+        max: vis.extent[1]
       };
     })
     .entries(vis.provinceData);
 
   // Show the X scale
-  vis.x.domain([vis.Province]);
+  vis.x.domain(vis.domain); //This does not change per boxplot so this could move back to main.js. Along with the code right below.
 
-  // vis.parentElement
-  // .append("g")
-  // .attr("transform", "translate(0,360)") //move to main; use variables from that file.
-  // .call(d3.axisBottom(vis.x));
+  //outs - why can't this be in main.js; also spread out tick labels; use tick():
+  vis.parentElement
+    .append("g")
+    .attr("transform", "translate(0,360)") //move to main; use variables from that file.
+    .call(d3.axisBottom(vis.x));
+
+  vis.parentElement
+    .append("text")
+    .attr("class", "title")
+    .attr("x", 60)
+    .attr("y", 15)
+    .text(vis.indicator);
 
   // Show the main vertical line
   vis.parentElement
@@ -99,11 +115,10 @@ BoxPlot.prototype.initVis = function() {
       return vis.y(d.value.max);
     })
     .attr("stroke", "black")
-    .style("width", 40)
-    .attr("transform", "translate(" + vis.xDisplacement + ",0)");
+    .style("width", 40);
 
   // rectangle for the main box
-  vis.boxWidth = 100;
+  vis.boxWidth = 75;
   vis.parentElement
     .selectAll("boxes")
     .data(vis.sumstat)
@@ -120,8 +135,7 @@ BoxPlot.prototype.initVis = function() {
     })
     .attr("width", vis.boxWidth)
     .attr("stroke", "black")
-    .style("fill", "#69b3a2")
-    .attr("transform", "translate(" + vis.xDisplacement + ",0)");
+    .style("fill", "#69b3a2");
 
   //   Show the median
   vis.parentElement
@@ -142,8 +156,7 @@ BoxPlot.prototype.initVis = function() {
       return vis.y(d.value.median);
     })
     .attr("stroke", "black")
-    .style("width", 80)
-    .attr("transform", "translate(" + vis.xDisplacement + ",0)");
+    .style("width", 80);
 
   // Add individual points with jitter
   vis.jitterWidth = 50;
@@ -164,8 +177,7 @@ BoxPlot.prototype.initVis = function() {
     })
     .attr("r", 4)
     .style("fill", "white")
-    .attr("stroke", "black")
-    .attr("transform", "translate(" + vis.xDisplacement + ",0)");
+    .attr("stroke", "black");
 };
 
 BoxPlot.prototype.wrangleData = function() {

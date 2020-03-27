@@ -1,6 +1,6 @@
 // set the dimensions and margins of the graph
 let margin = { top: 10, right: 30, bottom: 30, left: 40 };
-let width = 460 - margin.left - margin.right;
+let width = 500 - margin.left - margin.right;
 let height = 400 - margin.top - margin.bottom; //400-10-30 = 400-40 = 360
 
 let svg = d3
@@ -18,11 +18,6 @@ let x = d3
   .paddingInner(1)
   .paddingOuter(0.5);
 
-svg
-  .append("g")
-  .attr("transform", "translate(0,360)") //move to main; use variables from that file.
-  .call(d3.axisBottom(x));
-
 // Show the Y scale
 let y = d3
   .scaleLinear()
@@ -31,31 +26,86 @@ let y = d3
 
 svg.append("g").call(d3.axisLeft(y));
 
-let promises = [d3.csv("data/Data4Pakistan-Baloch.csv")];
+let promises = [d3.csv("data/Data4Pakistan-UnpaidEmploy.csv")];
+let listAllProvinces = [];
+//outs - do I need to declare these?
+// let boxPlotGraphBaloch;
 
 Promise.all(promises).then(function(data) {
-  let balochData = data[0];
-  balochData.forEach(function(d) {
+  data[0].forEach(function(d) {
+    listAllProvinces.indexOf(d["Province"]) === -1
+      ? listAllProvinces.push(d["Province"])
+      : null;
     d["Unpaid employment (% of total employment)"] = +d[
       "Unpaid employment (% of total employment)"
     ];
-
     d["Unpaid employment, male (% of male employment)"] = +d[
       "Unpaid employment, male (% of male employment)"
     ];
-
     d["Unpaid employment, female (% of female employment)"] = +d[
       "Unpaid employment, female (% of female employment)"
     ];
   });
 
+  let dataBaloch = data[0].filter(each => each["Province"] === "Balochistan");
+  let dataKPK = data[0].filter(
+    each => each["Province"] === "Khyber Pakhtunkhwa"
+  );
+  let dataPunjab = data[0].filter(each => each["Province"] === "Punjab");
+  let dataSindh = data[0].filter(each => each["Province"] === "Sindh");
+  let dataICT = data[0].filter(
+    each => each["Province"] === "Federal Capital Territory"
+  );
+
+  //OUTS - if one of these is not created, the x-axis still has all provinces labelled.
+  //Have to build x.domain() using only the provinces that have boxplots created.
   boxPlotGraphBaloch = new BoxPlot(
     svg,
     x,
     y,
-    20,
     "Balochistan",
     "Unpaid employment (% of total employment)",
-    balochData
+    dataBaloch,
+    listAllProvinces
+  );
+
+  boxPlotGraphKPK = new BoxPlot(
+    svg,
+    x,
+    y,
+    "Khyber Pakhtunkhwa",
+    "Unpaid employment (% of total employment)",
+    dataKPK,
+    listAllProvinces
+  );
+
+  boxPlotGraphPunjab = new BoxPlot(
+    svg,
+    x,
+    y,
+    "Punjab",
+    "Unpaid employment (% of total employment)",
+    dataPunjab,
+    listAllProvinces
+  );
+
+  boxPlotGraphSindh = new BoxPlot(
+    svg,
+    x,
+    y,
+    "Sindh",
+    "Unpaid employment (% of total employment)",
+    dataSindh,
+    listAllProvinces
+  );
+
+  boxPlotGraphICT = new BoxPlot(
+    svg,
+    x,
+    y,
+    "Federal Capital Territory",
+    "Unpaid employment (% of total employment)",
+    dataICT,
+    listAllProvinces
   );
 });
