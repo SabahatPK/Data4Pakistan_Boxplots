@@ -5,7 +5,8 @@ BoxPlot = function(
   _Province,
   _indicator,
   _provinceData,
-  _domain
+  _domain,
+  _Title
 ) {
   this.parentElement = _parentElement;
   this.x = _x;
@@ -14,6 +15,7 @@ BoxPlot = function(
   this.indicator = _indicator;
   this.provinceData = _provinceData;
   this.domain = _domain;
+  this.Title = _Title;
 
   this.initVis();
 };
@@ -25,8 +27,6 @@ BoxPlot = function(
 
 BoxPlot.prototype.initVis = function() {
   let vis = this;
-
-  console.log(vis.domain);
 
   // Compute quartiles, median, inter quantile range min and max --> these info are then used to draw the box.
   vis.sumstat = d3
@@ -89,12 +89,7 @@ BoxPlot.prototype.initVis = function() {
     .attr("transform", "translate(0,360)") //move to main; use variables from that file.
     .call(d3.axisBottom(vis.x));
 
-  vis.parentElement
-    .append("text")
-    .attr("class", "title")
-    .attr("x", 60)
-    .attr("y", 15)
-    .text(vis.indicator);
+  vis.Title.text(vis.indicator);
 
   // Show the main vertical line
   vis.parentElement
@@ -175,7 +170,7 @@ BoxPlot.prototype.initVis = function() {
     .attr("cy", function(d) {
       return vis.y(d[vis.indicator]);
     })
-    .attr("r", 4)
+    .attr("r", 3)
     .style("fill", "white")
     .attr("stroke", "black");
 };

@@ -44,19 +44,55 @@
     <div class="container">
       <div class="row">
         <h3>
-          Data visualizations using data from
+          Insights from
           <a href="http://www.data4pakistan.com/" target="_blank"
             >Pakistan's Data Portal</a
           >.
         </h3>
 
-        <p>
-          I started by bulding a boxplot for one indicator and will be adding
-          additional indicators over the next few days.
-        </p>
-        <div id="my_dataviz"></div>
+      <h6>How does the number of people in Unpaid Employment vary across provinces and gender?</h6>
+ 
+      <div id="my_dataviz"></div>
+        <div id="my_dataviz1"></div>
+        <div id="my_dataviz2"></div>
+       <h6>Key Takeaways</h6>
+        <ul>
+          <li>Excluding ICT, because it is only one data point, each province shows much greater dispersion of data for women than men.</li>
+          <li>The median for women in Unpaid Employment is higher than for men, in each province.</li>
+          <li>There are some 0 values for women in Balochistan and KPK which is a little suspicious.</li>
+        </ul>
+<!-- OUTS: Either add comment about this does not account for outliers or add code to 
+  account for outliers; key is to show the outlier data points not just remove them! -->
+
       </div>
+
+      <!-- Beginning of footer -->
+      <div class="row">
+        <div class="col">
+          <h4 id="Footnote1">
+            About This Dashboard:
+          </h4>
+          <p>
+           
+          </p>
+          <p>
+            This dashboard was built using <strong><a href="https://d3js.org/" target="_blank">d3.js</a></strong>, a Javascript data visualization library.
+            The repo can be found <a href="https://github.com/SabahatPK/Data4Pakistan_Boxplots" target="_blank">here</a>. 
+
+            I know there are easier ways to create a boxplot than to code it in d3; but part of my goal is to learn more about d3. 
+            <br>
+            <br>
+            Future plans: improve formatting, design, storytelling.
+            
+          </p>
+            
+        </div>
+
+      </div>
+      <!-- End of footer -->
     </div>
+
+    
 
     <!-- External JS libraries -->
     <script src="js/d3.min.js"></script>
